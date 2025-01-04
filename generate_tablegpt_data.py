@@ -52,6 +52,7 @@ if __name__ == "__main__":
             n_jobs=args.n_jobs,
             random_state=args.seed,
             augment=args.augment,
+            verbose=True,
         )
         data = data_generator.generate_data(train_data_dir, train_data_dir)
 

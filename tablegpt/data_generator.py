@@ -5,7 +5,8 @@ from .prompt_generator import PromptGenerator
 from .table_tasks.table_task_factory import TableTaskFactory
 from typing import Optional, Union
 from .table_tasks.base_table_task import BaseTableTask
-
+from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 class DataGenerator:
     def __init__(
@@ -67,6 +68,7 @@ class DataGenerator:
         # generate test_data
         self.print_log("Generating prompt and completion.")
         test_data = self._generate_data(test_datasets, train_datasets)
+        self.print_log("Data generation completed.")
 
         # remove invalid data for training
         if self.mode == "train" and len(test_data) > 0:
@@ -78,6 +80,7 @@ class DataGenerator:
 
     def _generate_data(self, test_datasets, train_datasets):
         all_args = []
+        total_examples = len(test_datasets)
 
         for idx, test_example in enumerate(test_datasets):
             # use train datasets as fewshot candidates if they are not provided
@@ -95,23 +98,41 @@ class DataGenerator:
                 seed = self.random_state
                 num_fewshot_samples = self.num_test_fewshot_samples
 
-            all_args.append([test_example, num_fewshot_samples, seed])
+            all_args.append([test_example, num_fewshot_samples, seed, idx, total_examples])
 
+        self.print_log(f"Starting processing for {total_examples} examples...")
+        results = []
+        # # 使用 tqdm.contrib.concurrent 管理进度条
+        # results = process_map(
+        #     lambda args: self.generate_data_one_example(*args),
+        #     all_args,
+        #     max_workers=self.n_jobs,
+        #     chunksize=1,
+        # )
         # generate data for each example in parallel with multiprocessing
         if self.n_jobs == 1:
-            results = [self.generate_data_one_example(*args) for args in all_args]
+            for args in all_args:
+                results.append(self.generate_data_one_example(*args))
+            #results = [self.generate_data_one_example(*args) for args in all_args]
         else:
             with Pool(self.n_jobs) as pool:
+                #results = list(tqdm(pool.starmap(self.generate_data_one_example, all_args), total=total_examples, desc="Processing examples"))
                 results = pool.starmap(self.generate_data_one_example, all_args)
 
+        self.print_log("Merging results...")
         # merge all generated data and remove invalid ones
         if len(results) > 0:
             data_df = pd.concat(results, axis=0).reset_index(drop=True)
+            self.print_log("Results merged successfully.")
             return data_df
         else:
+            self.print_log("No results to merge.")
             return []
 
-    def generate_data_one_example(self, test_example, num_fewshot_samples, seed=1):
+    def generate_data_one_example(self, test_example, num_fewshot_samples, seed=1,idx=None, total=None):
+        if idx is not None and total is not None:
+            self.print_log(f"Processing example {idx+1}/{total}...")
+
         # retrieve fewshot examples
         fewshot_candidates = test_example.get("fewshot_candidates", [])
         if fewshot_candidates is not None and len(fewshot_candidates) > 0:
@@ -119,7 +140,10 @@ class DataGenerator:
                 fewshot_candidates, num_fewshot_samples, random_state=seed
             )
         else:
-            fewshot_examples = []
+            fewshot_examples = [] 
+
+        self.print_log(f"Example {idx+1}/{total}: Few-shot examples generated.")
+
 
         if self.augment:
             test_example = self.table_task.augment_data(test_example, random_state=seed)
@@ -128,6 +152,8 @@ class DataGenerator:
                 for example in fewshot_candidates
             ]
             fewshot_candidates = fewshot_candidates_augment
+
+        self.print_log(f"Example {idx+1}/{total}: Data augmentation completed.")
 
         # initalize prompt generator
         prompt_generator = PromptGenerator(
@@ -142,6 +168,9 @@ class DataGenerator:
         # geenrate prompt and completion
         prompt = prompt_generator.generate_prompt(test_example, fewshot_examples)
         completion = prompt_generator.generate_completion(test_example)
+
+        self.print_log(f"Example {idx+1}/{total}: Prompt and completion generated.")
+
 
         # save data and metadata into a dataframe
         data = {
@@ -161,6 +190,8 @@ class DataGenerator:
 
         data["metadata"] = metadata
         data_df = pd.DataFrame([data])
+        self.print_log(f"Example {idx+1}/{total}: Example processing completed.")
+    
         return data_df
 
     def _get_random_mixed_shot_num(self, random_state):
