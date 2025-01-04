@@ -8,26 +8,26 @@ Our training and test table-finetuning data for Table-GPT can be downloaded dire
 ## Task descriptions
 We collect (or synthesize) 18 diverse table-related tasks, which are summarized in the table below. There are 14 training tasks (T5 - T18) and 9 test tasks (T1 - T9). Some of these tasks (T-1 to T-4) are used as unseen hold-out tasks, to evaluate Table-GPT ability to generalize to completely new and unseen tasks. Some of these tasks (T-10 to T-18) are used for training only. 
  
- | **Task Name** | **Task Description** | **Task Category** | **Train/Test** |
-|---|---|---|---|
-| T-1: Missing-value identification (MV) | Identify the row and column position of the only missing cell in a given table | Table understanding | Test only |
-| T-2: Column-finding (CF) | Identify the column-name of a specific value that appears only once in a given table | Table Understanding | Test only |
-| T-3: Table-QA (TQA) | Answer a natural-language question based on the content of a table | Table QA | Test only |
-| T-4: Column type annotation (CTA) | Find the semantic type of a column from a given list of choices | Table understanding | Test only |
-| T-5: Row-to-row transform (R2R) | Transform table data based on input/output examples | Data transformation | Train/Test |
-| T-6: Entity matching (EM) | Match rows from two tables that refer to the same real-world entity | Table matching | Train/Test |
-| T-7: Schema matching (SM) | Match columns from two tables that refer to the same meaning | Table matching | Train/Test |
-| T-8: Data imputation (DI) | Predict the missing values in a cell based on the table context | Data cleaning | Train/Test |
-| T-9: Error detection (ED) | Detect data values in a table that is a likely error from misspelling | Data cleaning | Train/Test |
-| T-10: List extraction (LE) | Extract a structured table from a list that lacks explicit column delimiters | Data transformation | Train only |
-| T-11: Header value matching (HVM) | Match column-headers with its data values drawn from the same table | Table matching | Train only |
-| T-12: Natural-language to SQL (NS) | Translate a natural-language question on a table into a SQL query | NL-to-SQL | Train only |
-| T-13: Table summarization (TS) | Produce a natural-language summary for the content in a table | Data augmentation | Train only |
-| T-14: Column augmentation (CA) | Augment a table with additional columns compatible with a given table | Data augmentation | Train only |
-| T-15: Row augmentation (RA) | Augment a table with additional rows compatible with a given table | Data augmentation | Train only |
-| T-16: Row/column swapping (RCSW) | Manipulate a given table by swapping the position of two rows or columns | Table manipulation | Train only |
-| T-17: Row/column filtering (RCF) | Manipulate a given table by filtering on given rows or columns | Table manipulation | Train only |
-| T-18: Row/column sorting (RCS) | Manipulate a given table by performing sorting on given rows or columns | Table manipulation | Train only |
+ | **Task Name**                          | **Task Description**                                                                 | **Task Category**   | **Train/Test** |
+ | -------------------------------------- | ------------------------------------------------------------------------------------ | ------------------- | -------------- |
+ | T-1: Missing-value identification (MV) | Identify the row and column position of the only missing cell in a given table       | Table understanding | Test only      |
+ | T-2: Column-finding (CF)               | Identify the column-name of a specific value that appears only once in a given table | Table Understanding | Test only      |
+ | T-3: Table-QA (TQA)                    | Answer a natural-language question based on the content of a table                   | Table QA            | Test only      |
+ | T-4: Column type annotation (CTA)      | Find the semantic type of a column from a given list of choices                      | Table understanding | Test only      |
+ | T-5: Row-to-row transform (R2R)        | Transform table data based on input/output examples                                  | Data transformation | Train/Test     |
+ | T-6: Entity matching (EM)              | Match rows from two tables that refer to the same real-world entity                  | Table matching      | Train/Test     |
+ | T-7: Schema matching (SM)              | Match columns from two tables that refer to the same meaning                         | Table matching      | Train/Test     |
+ | T-8: Data imputation (DI)              | Predict the missing values in a cell based on the table context                      | Data cleaning       | Train/Test     |
+ | T-9: Error detection (ED)              | Detect data values in a table that is a likely error from misspelling                | Data cleaning       | Train/Test     |
+ | T-10: List extraction (LE)             | Extract a structured table from a list that lacks explicit column delimiters         | Data transformation | Train only     |
+ | T-11: Header value matching (HVM)      | Match column-headers with its data values drawn from the same table                  | Table matching      | Train only     |
+ | T-12: Natural-language to SQL (NS)     | Translate a natural-language question on a table into a SQL query                    | NL-to-SQL           | Train only     |
+ | T-13: Table summarization (TS)         | Produce a natural-language summary for the content in a table                        | Data augmentation   | Train only     |
+ | T-14: Column augmentation (CA)         | Augment a table with additional columns compatible with a given table                | Data augmentation   | Train only     |
+ | T-15: Row augmentation (RA)            | Augment a table with additional rows compatible with a given table                   | Data augmentation   | Train only     |
+ | T-16: Row/column swapping (RCSW)       | Manipulate a given table by swapping the position of two rows or columns             | Table manipulation  | Train only     |
+ | T-17: Row/column filtering (RCF)       | Manipulate a given table by filtering on given rows or columns                       | Table manipulation  | Train only     |
+ | T-18: Row/column sorting (RCS)         | Manipulate a given table by performing sorting on given rows or columns              | Table manipulation  | Train only     |
 
 ## Data Generation
 To generate training or test table-finetuning data using the source code, we provide `generate_tablegpt_data.py` that can easily load source data and transform it into training and testing data for finetuning a large language model. Our genererated data are released and can be downloaded from [here](https://huggingface.co/datasets/LipengCS/Table-GPT).

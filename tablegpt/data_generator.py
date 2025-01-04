@@ -46,6 +46,7 @@ class DataGenerator:
         self.drop_long_prompt = drop_long_prompt
         self.augment = augment
 
+    # load train datasets and test datasets, and generate data
     def generate_data(
         self, test_data_dir: str, train_data_dir: Optional[str] = None
     ) -> pd.DataFrame:

@@ -44,6 +44,7 @@ class BaseTableTask:
             completion = answer
         return completion
 
+    # functions: 加载每个数据目录中的数据文件并构造一个 test_example。
     def load_data_example(self, data_dir: str) -> dict:
         info = self.load_json(os.path.join(data_dir, "info.json"))
         df = self.load_df(os.path.join(data_dir, "input_table.csv"))
@@ -51,6 +52,7 @@ class BaseTableTask:
         example.update(info)
         return example
 
+    # 在 load_data_example 基础上，添加 Few-shot 示例（从 fewshot_candidates 加载）。
     def load_test_example(self, data_dir: str) -> dict:
         test_example = self.load_data_example(data_dir)
         table_name = data_dir.split("/")[-1]
@@ -109,6 +111,7 @@ class BaseTableTask:
     def answer_to_json(self, key, value):
         return json.dumps({key: value})
 
+    # functions: 将表格序列化为 Markdown 或其他可读文本格式，供生成 Prompt 时使用。
     def serialize_df(self, df):
         text = [""]
         for c in df.columns:
